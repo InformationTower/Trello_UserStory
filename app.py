@@ -1,3 +1,4 @@
+import requests
 import streamlit as st
 from openai import OpenAI
 from pathlib import Path
@@ -143,4 +144,18 @@ else:
         st.session_state.ai_story = None
         st.rerun()
 
-    st.button("Push naar Trello", disabled=True)
+    st.button("Push naar Trello", disabled=False)
+
+def push_to_trello(title, desc=""):
+    url = "https://api.trello.com/1/cards"
+    params = {
+        "key": st.secrets["trello_api_key"],
+        "token": st.secrets["trello_token"],
+        "idList": st.secrets["trello_list_id"],
+        "name": title,
+        "desc": desc,
+    }
+    r = requests.post(url, params=params)
+    r.raise_for_status()
+    return r.json()
+
